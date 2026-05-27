@@ -1,0 +1,130 @@
+'use client'
+
+import { useActionState } from 'react'
+import Link from 'next/link'
+import { login } from '@/lib/actions/auth'
+
+export default function LoginPage() {
+  const [state, action, isPending] = useActionState(login, undefined)
+
+  return (
+    <div className="bg-bg-card rounded-2xl p-8 shadow-elevated border border-border-default">
+      {/* Mobile logo */}
+      <div className="lg:hidden text-center mb-8">
+        <h1 className="font-display text-3xl font-bold text-accent-gold">VaultX</h1>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="font-display text-2xl font-bold text-text-primary mb-2">Welcome Back</h2>
+        <p className="text-text-secondary text-sm">Sign in to continue to your dashboard</p>
+      </div>
+
+      <form action={action} className="flex flex-col gap-5">
+        {/* Email Field */}
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="email"
+            className="text-xs font-medium text-text-secondary uppercase tracking-wider"
+          >
+            Email Address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            className="w-full px-4 py-3 bg-bg-elevated border border-border-default rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-gold transition"
+            required
+          />
+          {state?.error?.email && (
+            <p className="text-status-danger text-xs mt-1">
+              {Array.isArray(state.error.email)
+                ? state.error.email[0]
+                : state.error.email}
+            </p>
+          )}
+        </div>
+
+        {/* Password Field */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-between items-center">
+            <label
+              htmlFor="password"
+              className="text-xs font-medium text-text-secondary uppercase tracking-wider"
+            >
+              Password
+            </label>
+            <Link
+              href="/auth/forgotpassword"
+              className="text-xs text-accent-gold hover:text-accent-gold-light transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            className="w-full px-4 py-3 bg-bg-elevated border border-border-default rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-gold transition"
+            required
+          />
+          {state?.error?.password && (
+            <p className="text-status-danger text-xs mt-1">
+              {Array.isArray(state.error.password)
+                ? state.error.password[0]
+                : state.error.password}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isPending}
+          className="mt-2 w-full bg-accent-gold hover:bg-accent-gold-light text-text-inverse font-semibold py-3.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-glow"
+        >
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              Signing in...
+            </span>
+          ) : (
+            'Sign In'
+          )}
+        </button>
+      </form>
+
+      <div className="mt-8 text-center">
+        <p className="text-text-secondary text-sm">
+          Don&apos;t have an account?{' '}
+          <Link
+            href="/auth/signup"
+            className="text-accent-gold hover:text-accent-gold-light font-semibold transition-colors"
+          >
+            Sign up
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+}
