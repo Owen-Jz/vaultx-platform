@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Sora, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import SmoothScroll from '@/lib/smooth-scroll'
+import { ThemeProvider } from '@/context/ThemeContext'
 
 const sora = Sora({
   subsets: ['latin'],
@@ -32,11 +33,20 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('vaultx-theme')==='light')document.documentElement.classList.add('light')}catch(e){}`,
+          }}
+        />
+      </head>
       <body
         className={`${sora.variable} ${dmSans.variable} ${jetbrains.variable} bg-bg-primary text-text-primary font-body antialiased min-h-screen`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   )

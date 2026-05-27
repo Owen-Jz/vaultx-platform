@@ -41,6 +41,7 @@ export default function TrustSection() {
   const imageColRef = useRef<HTMLDivElement>(null)
   const statCardRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
@@ -52,6 +53,7 @@ export default function TrustSection() {
         opacity: 0,
         duration: 1,
         ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 70%',
@@ -66,6 +68,7 @@ export default function TrustSection() {
         duration: 0.8,
         delay: 0.4,
         ease: 'power3.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 70%',
@@ -82,12 +85,70 @@ export default function TrustSection() {
           stagger: 0.15,
           duration: 0.8,
           ease: 'power3.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top 70%',
             once: true,
           },
         })
+      }
+
+      // Section header scroll-triggered reveal
+      gsap.from(headerRef.current?.querySelectorAll('p, h2, p:last-child') ?? [], {
+        y: 30,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: 'top 80%',
+          once: true,
+        },
+      })
+
+      // Magnetic icon hover on feature items
+      const cleanups: Array<() => void> = []
+
+      if (featuresRef.current) {
+        const items = featuresRef.current.querySelectorAll('.feature-item')
+        items.forEach((item) => {
+          const iconEl = item.querySelector('div') as HTMLElement | null
+          if (!iconEl) return
+
+          const onEnter = () => {
+            gsap.to(iconEl, {
+              scale: 1.2,
+              rotation: 10,
+              backgroundColor: 'rgba(201,168,92,0.25)',
+              duration: 0.25,
+              ease: 'power2.out',
+            })
+            gsap.to(item, { x: 4, duration: 0.25 })
+          }
+          const onLeave = () => {
+            gsap.to(iconEl, {
+              scale: 1,
+              rotation: 0,
+              backgroundColor: 'rgba(201,168,92,0.1)',
+              duration: 0.35,
+              ease: 'elastic.out(1, 0.5)',
+            })
+            gsap.to(item, { x: 0, duration: 0.35 })
+          }
+
+          item.addEventListener('mouseenter', onEnter)
+          item.addEventListener('mouseleave', onLeave)
+          cleanups.push(() => {
+            item.removeEventListener('mouseenter', onEnter)
+            item.removeEventListener('mouseleave', onLeave)
+          })
+        })
+      }
+
+      return () => {
+        cleanups.forEach((fn) => fn())
       }
     },
     { scope: sectionRef }
@@ -101,7 +162,7 @@ export default function TrustSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div ref={headerRef} className="text-center mb-16">
           <p className="text-accent-gold text-xs font-semibold tracking-widest uppercase mb-3">
             BUILT FOR TRUST
           </p>
@@ -119,7 +180,7 @@ export default function TrustSection() {
           {/* LEFT: Image */}
           <div ref={imageColRef} className="relative rounded-2xl overflow-hidden h-[480px]">
             <Image
-              src="https://images.unsplash.com/photo-1614854262318-831574f15f1f?auto=format&fit=crop&w=800&q=80"
+              src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80"
               alt="Secure financial infrastructure"
               fill
               className="object-cover"

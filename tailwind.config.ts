@@ -6,14 +6,15 @@ const config: Config = {
     './components/**/*.{ts,tsx}',
     './hooks/**/*.{ts,tsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         bg: {
-          primary: '#0A0C10',
-          secondary: '#111318',
-          elevated: '#181B22',
-          card: '#1C2028',
+          primary: 'rgb(var(--color-bg-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-bg-secondary) / <alpha-value>)',
+          elevated: 'rgb(var(--color-bg-elevated) / <alpha-value>)',
+          card: 'rgb(var(--color-bg-card) / <alpha-value>)',
         },
         accent: {
           gold: '#C9A85C',
@@ -22,14 +23,14 @@ const config: Config = {
           amber: '#F59E0B',
         },
         text: {
-          primary: '#F8F7F4',
-          secondary: '#A8A5A0',
-          muted: '#6B6860',
-          inverse: '#0A0C10',
+          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
+          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+          inverse: 'rgb(var(--color-text-inverse) / <alpha-value>)',
         },
         border: {
-          default: '#2A2D35',
-          subtle: '#1E2028',
+          default: 'rgb(var(--color-border-default) / <alpha-value>)',
+          subtle: 'rgb(var(--color-border-subtle) / <alpha-value>)',
           focus: '#C9A85C',
         },
         status: {

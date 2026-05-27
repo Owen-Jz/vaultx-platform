@@ -155,6 +155,26 @@ export async function approveWithdrawal(withdrawalId: string) {
   return { success: true }
 }
 
+export async function rejectDeposit(depositId: string) {
+  await connectDB()
+  const deposit = await Deposit.findById(depositId)
+  if (!deposit) return { error: 'Deposit not found' }
+  deposit.status = 'rejected'
+  await deposit.save()
+  revalidatePath('/admin')
+  return { success: true }
+}
+
+export async function rejectWithdrawal(withdrawalId: string) {
+  await connectDB()
+  const withdrawal = await Withdrawal.findById(withdrawalId)
+  if (!withdrawal) return { error: 'Withdrawal not found' }
+  withdrawal.status = 'rejected'
+  await withdrawal.save()
+  revalidatePath('/admin')
+  return { success: true }
+}
+
 export async function updateUserStats(
   userId: string,
   data: { profit?: number; btc?: number; total?: number }

@@ -92,6 +92,49 @@ export default function PricingSection() {
           once: true,
         },
       })
+
+      // 3D tilt on pricing cards
+      const innerCards = cardsRef.current?.querySelectorAll('.pricing-card > div') ?? []
+      const cleanups: Array<() => void> = []
+
+      innerCards.forEach((card) => {
+        const el = card as HTMLElement
+        el.style.transformStyle = 'preserve-3d'
+        el.style.willChange = 'transform'
+
+        const onMove = (e: MouseEvent) => {
+          const rect = el.getBoundingClientRect()
+          const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2)
+          const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2)
+          gsap.to(el, {
+            rotationY: dx * 10,
+            rotationX: -dy * 8,
+            transformPerspective: 700,
+            scale: 1.02,
+            duration: 0.3,
+            ease: 'power2.out',
+          })
+        }
+        const onLeave = () => {
+          gsap.to(el, {
+            rotationY: 0,
+            rotationX: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: 'elastic.out(1, 0.4)',
+          })
+        }
+        el.addEventListener('mousemove', onMove)
+        el.addEventListener('mouseleave', onLeave)
+        cleanups.push(() => {
+          el.removeEventListener('mousemove', onMove)
+          el.removeEventListener('mouseleave', onLeave)
+        })
+      })
+
+      return () => {
+        cleanups.forEach((fn) => fn())
+      }
     },
     { scope: sectionRef }
   )

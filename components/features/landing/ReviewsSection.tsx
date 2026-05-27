@@ -1,6 +1,12 @@
 'use client'
 
 import Image from 'next/image'
+import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface Review {
   name: string
@@ -95,8 +101,23 @@ export default function ReviewsSection() {
   const duplicatedRow1 = [...row1Reviews, ...row1Reviews]
   const duplicatedRow2 = [...row2Reviews, ...row2Reviews]
 
+  const sectionRef = useRef<HTMLElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const row1Ref = useRef<HTMLDivElement>(null)
+  const row2Ref = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    gsap.from(headerRef.current, {
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
+    })
+  }, { scope: sectionRef })
+
   return (
-    <section className="bg-bg-secondary py-24 sm:py-32 overflow-hidden">
+    <section ref={sectionRef} className="bg-bg-secondary py-24 sm:py-32 overflow-hidden">
       <style>{`
         @keyframes marquee-left {
           from { transform: translateX(0); }
@@ -115,7 +136,7 @@ export default function ReviewsSection() {
       `}</style>
 
       {/* Header */}
-      <div className="text-center mb-10 px-4">
+      <div ref={headerRef} className="text-center mb-10 px-4">
         <p className="text-accent-gold text-xs font-semibold tracking-widest uppercase mb-3">
           Client Testimonials
         </p>
@@ -145,8 +166,12 @@ export default function ReviewsSection() {
         />
 
         {/* Row 1 — moves left */}
-        <div className="flex gap-5 overflow-hidden">
-          <div className="marquee-left flex gap-5 will-change-transform">
+        <div
+          className="flex gap-5 overflow-hidden"
+          onMouseEnter={() => { if (row1Ref.current) row1Ref.current.style.animationPlayState = 'paused' }}
+          onMouseLeave={() => { if (row1Ref.current) row1Ref.current.style.animationPlayState = 'running' }}
+        >
+          <div ref={row1Ref} className="marquee-left flex gap-5 will-change-transform">
             {duplicatedRow1.map((review, i) => (
               <ReviewCard key={`r1-${i}`} review={review} />
             ))}
@@ -154,8 +179,12 @@ export default function ReviewsSection() {
         </div>
 
         {/* Row 2 — moves right */}
-        <div className="flex gap-5 overflow-hidden">
-          <div className="marquee-right flex gap-5 will-change-transform">
+        <div
+          className="flex gap-5 overflow-hidden"
+          onMouseEnter={() => { if (row2Ref.current) row2Ref.current.style.animationPlayState = 'paused' }}
+          onMouseLeave={() => { if (row2Ref.current) row2Ref.current.style.animationPlayState = 'running' }}
+        >
+          <div ref={row2Ref} className="marquee-right flex gap-5 will-change-transform">
             {duplicatedRow2.map((review, i) => (
               <ReviewCard key={`r2-${i}`} review={review} />
             ))}

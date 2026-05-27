@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, ArrowDownToLine, ArrowUpFromLine, Download, LogOut } from 'lucide-react'
+import { Users, ArrowDownToLine, ArrowUpFromLine, Download, LogOut, TrendingUp, AlertTriangle, DollarSign, Users as UsersIcon } from 'lucide-react'
 import { Badge, Button, cn } from '@/components/ui'
 import AdminUserTable from '@/components/features/AdminUserTable'
 import AdminDepositQueue from '@/components/features/AdminDepositQueue'
@@ -30,6 +30,17 @@ export default function AdminDashboardClient({
 
   const pendingDeposits = deposits.filter((d) => d.status === 'pending').length
   const pendingWithdrawals = withdrawals.filter((w) => w.status === 'pending').length
+  const totalAUM = users.reduce((sum, { stats }) => sum + (stats?.total ?? 0), 0)
+  const pendingItems = pendingDeposits + pendingWithdrawals
+  const approvedDepositsCount = deposits.filter((d) => d.status === 'approved').length
+
+  const formatAUM = (val: number) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(val)
 
   const tabs: {
     label: string
@@ -82,6 +93,40 @@ export default function AdminDashboardClient({
               Sign Out
             </Button>
           </form>
+        </div>
+      </div>
+
+      {/* Stats overview */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="bg-bg-elevated border border-border-default rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <UsersIcon className="w-3.5 h-3.5 text-text-muted" />
+            <p className="text-xs text-text-muted">Total Users</p>
+          </div>
+          <p className="text-2xl font-bold text-text-primary">{users.length}</p>
+        </div>
+        <div className="bg-bg-elevated border border-border-default rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <DollarSign className="w-3.5 h-3.5 text-text-muted" />
+            <p className="text-xs text-text-muted">Total AUM</p>
+          </div>
+          <p className="text-2xl font-bold text-text-primary">{formatAUM(totalAUM)}</p>
+        </div>
+        <div className="bg-bg-elevated border border-border-default rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertTriangle className="w-3.5 h-3.5 text-text-muted" />
+            <p className="text-xs text-text-muted">Pending Items</p>
+          </div>
+          <p className={`text-2xl font-bold ${pendingItems > 0 ? 'text-status-warning' : 'text-text-primary'}`}>
+            {pendingItems}
+          </p>
+        </div>
+        <div className="bg-bg-elevated border border-border-default rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingUp className="w-3.5 h-3.5 text-text-muted" />
+            <p className="text-xs text-text-muted">Approved Today</p>
+          </div>
+          <p className="text-2xl font-bold text-text-primary">{approvedDepositsCount}</p>
         </div>
       </div>
 

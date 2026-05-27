@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, XCircle } from 'lucide-react'
 import { Card, Badge, Button, cn } from '@/components/ui'
-import { approveWithdrawal } from '@/lib/actions/admin'
+import { approveWithdrawal, rejectWithdrawal } from '@/lib/actions/admin'
 
 type WithdrawalWithUser = {
   _id: string
@@ -70,6 +70,22 @@ export default function AdminWithdrawQueue({ withdrawals }: AdminWithdrawQueuePr
         setItems((prev) =>
           prev.map((w) =>
             w._id === withdrawalId ? { ...w, status: 'approved' as const } : w
+          )
+        )
+      }
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  const handleReject = async (withdrawalId: string) => {
+    setLoadingId(withdrawalId)
+    try {
+      const result = await rejectWithdrawal(withdrawalId)
+      if (result.success) {
+        setItems((prev) =>
+          prev.map((w) =>
+            w._id === withdrawalId ? { ...w, status: 'rejected' as const } : w
           )
         )
       }
@@ -207,16 +223,28 @@ export default function AdminWithdrawQueue({ withdrawals }: AdminWithdrawQueuePr
                       </td>
                       <td className={tdClass}>
                         {withdrawal.status === 'pending' && (
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            loading={isLoading}
-                            onClick={() => handleApprove(id)}
-                            className="bg-status-success hover:bg-status-success/80 text-bg-primary border-0"
-                          >
-                            {!isLoading && <CheckCircle className="w-3.5 h-3.5 mr-1" />}
-                            Approve
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              loading={isLoading}
+                              onClick={() => handleApprove(id)}
+                              className="bg-status-success hover:bg-status-success/80 text-bg-primary border-0"
+                            >
+                              {!isLoading && <CheckCircle className="w-3.5 h-3.5 mr-1" />}
+                              Approve
+                            </Button>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              loading={isLoading}
+                              onClick={() => handleReject(id)}
+                              className="bg-status-danger hover:bg-status-danger/80 text-white border-0"
+                            >
+                              {!isLoading && <XCircle className="w-3.5 h-3.5 mr-1" />}
+                              Reject
+                            </Button>
+                          </div>
                         )}
                       </td>
                     </tr>

@@ -53,6 +53,7 @@ export default function ProcessSection() {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([])
   const imageRefs = useRef<(HTMLDivElement | null)[]>([])
   const dividerRefs = useRef<(HTMLDivElement | null)[]>([])
+  const progressLineRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
@@ -64,13 +65,14 @@ export default function ProcessSection() {
         const imageEl = imageRefs.current[index]
         const numberEl = numberRefs.current[index]
 
-        // Background number fades up
+        // Enhanced background number animation
         if (numberEl) {
           gsap.from(numberEl, {
             opacity: 0,
-            y: 20,
-            duration: 1,
-            ease: 'power3.out',
+            scale: 0.6,
+            y: 30,
+            duration: 1.2,
+            ease: 'back.out(1.7)',
             scrollTrigger: {
               trigger: stepRefs.current[index],
               start: 'top 75%',
@@ -122,11 +124,24 @@ export default function ProcessSection() {
               trigger: dividerEl,
               start: 'top 85%',
               scrub: 1,
-              once: true,
             },
           })
         }
       })
+
+      // Scroll-scrubbed vertical progress bar
+      if (progressLineRef.current) {
+        gsap.to(progressLineRef.current, {
+          height: '100%',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top center',
+            end: 'bottom center',
+            scrub: 1,
+          },
+        })
+      }
     },
     { scope: sectionRef },
   )
@@ -150,7 +165,15 @@ export default function ProcessSection() {
         </div>
 
         {/* Steps */}
-        <div className="flex flex-col">
+        <div className="relative flex flex-col">
+          {/* Vertical progress line (desktop only) */}
+          <div className="hidden lg:block absolute left-0 top-0 w-px h-full bg-border-default">
+            <div
+              ref={progressLineRef}
+              className="w-full bg-accent-gold origin-top"
+              style={{ height: '0%' }}
+            />
+          </div>
           {steps.map((step, index) => {
             const isEven = index % 2 === 1
 

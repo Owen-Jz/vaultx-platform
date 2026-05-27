@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
 export default function StartNowSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
+  const glowLayerRef = useRef<HTMLDivElement>(null)
   const headlineLine1Ref = useRef<HTMLDivElement>(null)
   const headlineLine2Ref = useRef<HTMLDivElement>(null)
   const subtextRef = useRef<HTMLParagraphElement>(null)
@@ -34,22 +35,32 @@ export default function StartNowSection() {
       })
     }
 
-    // Headline lines clip-mask reveal
-    const lines = [headlineLine1Ref.current, headlineLine2Ref.current].filter(Boolean)
-    if (lines.length > 0) {
-      gsap.from(lines, {
-        y: '110%',
-        opacity: 0,
-        stagger: 0.1,
-        duration: 1,
-        ease: 'power4.out',
+    // Secondary parallax layer (gold glow)
+    if (glowLayerRef.current) {
+      gsap.to(glowLayerRef.current, {
+        y: '-15%',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 70%',
-          once: true,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.5,
         },
       })
     }
+
+    // Headline lines clip-mask reveal (enhanced with stagger)
+    gsap.from([headlineLine1Ref.current, headlineLine2Ref.current], {
+      y: '110%',
+      opacity: 0,
+      stagger: 0.12,
+      duration: 1.2,
+      ease: 'power4.out',
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 70%',
+        once: true,
+      },
+    })
 
     // Subtext + CTA fade up
     const fadeEls = [subtextRef.current, ctaRef.current].filter(Boolean)
@@ -66,6 +77,19 @@ export default function StartNowSection() {
           once: true,
         },
       })
+    }
+
+    // CTA button hover glow
+    const ctaBtn = sectionRef.current?.querySelector('.cta-btn') as HTMLElement | null
+    if (ctaBtn) {
+      const onEnter = () => gsap.to(ctaBtn, { scale: 1.05, boxShadow: '0 0 40px rgba(201,168,92,0.5)', duration: 0.3 })
+      const onLeave = () => gsap.to(ctaBtn, { scale: 1, boxShadow: '0 0 24px rgba(201,168,92,0.2)', duration: 0.4 })
+      ctaBtn.addEventListener('mouseenter', onEnter)
+      ctaBtn.addEventListener('mouseleave', onLeave)
+      return () => {
+        ctaBtn.removeEventListener('mouseenter', onEnter)
+        ctaBtn.removeEventListener('mouseleave', onLeave)
+      }
     }
   }, { scope: sectionRef })
 
@@ -85,6 +109,15 @@ export default function StartNowSection() {
           sizes="100vw"
         />
       </div>
+
+      {/* Secondary parallax layer — gold glow */}
+      <div
+        ref={glowLayerRef}
+        className="absolute inset-0 scale-110 will-change-transform pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,92,0.08) 0%, transparent 70%)',
+        }}
+      />
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-bg-primary/75" />
@@ -127,7 +160,7 @@ export default function StartNowSection() {
         <div ref={ctaRef} className="flex flex-col items-center gap-4">
           <Link
             href="/auth/signup"
-            className="inline-flex items-center gap-2 bg-accent-gold text-bg-primary font-semibold px-10 py-4 rounded-full text-lg hover:bg-accent-gold-light transition-colors duration-200"
+            className="cta-btn inline-flex items-center gap-2 bg-accent-gold text-bg-primary font-semibold px-10 py-4 rounded-full text-lg hover:bg-accent-gold-light transition-colors duration-200"
           >
             Create Free Account →
           </Link>

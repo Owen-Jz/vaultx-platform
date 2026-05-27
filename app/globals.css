@@ -1,3 +1,35 @@
+/* ── Theme tokens ── */
+:root {
+  /* Dark mode — default */
+  --color-bg-primary: 10 12 16;
+  --color-bg-secondary: 17 19 24;
+  --color-bg-elevated: 24 27 34;
+  --color-bg-card: 28 32 40;
+  --color-text-primary: 248 247 244;
+  --color-text-secondary: 168 165 160;
+  --color-text-muted: 107 104 96;
+  --color-text-inverse: 10 12 16;
+  --color-border-default: 42 45 53;
+  --color-border-subtle: 30 32 40;
+}
+
+html.light {
+  --color-bg-primary: 245 244 241;
+  --color-bg-secondary: 236 234 230;
+  --color-bg-elevated: 255 255 255;
+  --color-bg-card: 248 247 244;
+  --color-text-primary: 10 12 16;
+  --color-text-secondary: 74 72 69;
+  --color-text-muted: 122 120 112;
+  --color-text-inverse: 245 244 241;
+  --color-border-default: 213 210 203;
+  --color-border-subtle: 224 221 216;
+}
+
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,8 +46,6 @@
   }
 
   body {
-    background-color: #0A0C10;
-    color: #F8F7F4;
   }
 
   ::-webkit-scrollbar {
@@ -23,11 +53,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #111318;
+    background: rgb(var(--color-bg-secondary));
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #2A2D35;
+    background: rgb(var(--color-border-default));
     border-radius: 3px;
   }
 
