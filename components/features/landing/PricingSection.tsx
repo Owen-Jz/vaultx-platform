@@ -1,28 +1,32 @@
+'use client'
+
 import Link from 'next/link'
-import { Card, Badge, Button } from '@/components/ui'
+import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Check } from 'lucide-react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface Plan {
   name: string
   minInvestment: string
   monthlyReturn: string
   featured?: boolean
-  badge?: string
   cta: string
   ctaHref: string
-  ctaVariant: 'primary' | 'secondary' | 'ghost'
   features: string[]
 }
 
 const plans: Plan[] = [
   {
     name: 'Starter',
-    minInvestment: '$500',
+    minInvestment: '$500 minimum',
     monthlyReturn: '5%',
     featured: false,
     cta: 'Get Started',
     ctaHref: '/auth/signup',
-    ctaVariant: 'secondary',
     features: [
       'Monthly profit payouts',
       'Portfolio analytics dashboard',
@@ -33,13 +37,11 @@ const plans: Plan[] = [
   },
   {
     name: 'Growth',
-    minInvestment: '$5,000',
+    minInvestment: '$5,000 minimum',
     monthlyReturn: '8%',
     featured: true,
-    badge: 'Most Popular',
     cta: 'Start Growing',
     ctaHref: '/auth/signup',
-    ctaVariant: 'primary',
     features: [
       'Monthly profit payouts',
       'Advanced portfolio analytics',
@@ -52,12 +54,11 @@ const plans: Plan[] = [
   },
   {
     name: 'Elite',
-    minInvestment: '$25,000',
+    minInvestment: '$25,000 minimum',
     monthlyReturn: '12%',
     featured: false,
     cta: 'Contact Us',
     ctaHref: '/contact',
-    ctaVariant: 'secondary',
     features: [
       'Monthly profit payouts',
       'Institutional analytics suite',
@@ -65,87 +66,154 @@ const plans: Plan[] = [
       'Instant priority withdrawals',
       'Custom investment strategy',
       'Comprehensive tax reporting',
-      'VIP support (white-glove)',
+      'VIP white-glove support',
       '$25,000+ investment range',
     ],
   },
 ]
 
 export default function PricingSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (!cardsRef.current) return
+      const cards = cardsRef.current.querySelectorAll('.pricing-card')
+      gsap.from(cards, {
+        y: 80,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: 'top 75%',
+          once: true,
+        },
+      })
+    },
+    { scope: sectionRef }
+  )
+
   return (
-    <section className="bg-bg-primary py-20 sm:py-28">
+    <section
+      ref={sectionRef}
+      className="bg-bg-primary py-24 sm:py-32 overflow-hidden"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-accent-gold text-sm font-semibold tracking-widest uppercase mb-3">
-            Investment Plans
+
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <p className="text-accent-gold text-xs font-semibold tracking-widest uppercase mb-3">
+            INVESTMENT PLANS
           </p>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-text-primary">
-            Choose Your Investment Tier
+            Choose Your Path to Growth
           </h2>
-          <p className="mt-4 text-text-secondary max-w-xl mx-auto">
+          <p className="mt-4 text-text-secondary max-w-xl mx-auto text-base leading-relaxed">
             Whether you are beginning your journey or scaling an institutional portfolio, VaultX has a plan built for your ambitions.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        {/* Cards grid */}
+        <div
+          ref={cardsRef}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch"
+        >
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={plan.featured ? 'md:-mt-4 md:mb-4' : ''}
+              className="pricing-card flex"
+              style={
+                plan.featured
+                  ? {
+                      filter: 'drop-shadow(0 0 40px rgba(201,168,92,0.15))',
+                    }
+                  : undefined
+              }
             >
-              <Card
-                variant={plan.featured ? 'gold' : 'elevated'}
-                className={`p-8 flex flex-col gap-6 ${plan.featured ? 'ring-1 ring-accent-gold/40' : ''}`}
+              <div
+                className={`
+                  relative flex flex-col gap-6 rounded-2xl p-8 w-full overflow-hidden
+                  bg-bg-elevated border
+                  ${
+                    plan.featured
+                      ? 'border-accent-gold/40'
+                      : 'border-border-default'
+                  }
+                `}
               >
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-text-primary">
-                      {plan.name}
-                    </h3>
-                    <p className="text-text-muted text-sm mt-1">
-                      Min. {plan.minInvestment}
-                    </p>
-                  </div>
-                  {plan.badge && (
-                    <Badge variant="info" className="text-xs">
-                      {plan.badge}
-                    </Badge>
-                  )}
-                </div>
+                {/* Featured background decoration */}
+                {plan.featured && (
+                  <div
+                    className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
+                    style={{
+                      background:
+                        'radial-gradient(circle at top right, rgba(201,168,92,0.06) 0%, transparent 70%)',
+                    }}
+                  />
+                )}
 
-                {/* Monthly return */}
-                <div>
-                  <span className="font-display text-5xl font-bold text-accent-gold">
+                {/* MOST POPULAR badge */}
+                {plan.featured && (
+                  <span className="absolute top-4 right-4 bg-accent-gold text-bg-primary text-xs font-bold px-3 py-1 rounded-full tracking-wide uppercase">
+                    Most Popular
+                  </span>
+                )}
+
+                {/* Plan eyebrow name */}
+                <p className="text-xs font-semibold tracking-widest uppercase text-text-muted">
+                  {plan.name}
+                </p>
+
+                {/* Huge return number */}
+                <div className="flex items-end gap-2 leading-none">
+                  <span className="font-display text-7xl font-bold text-accent-gold leading-none">
                     {plan.monthlyReturn}
                   </span>
-                  <span className="text-text-muted text-sm ml-2">monthly returns</span>
+                  <span className="text-text-muted text-lg mb-1.5">/mo</span>
                 </div>
 
-                {/* Divider */}
+                {/* Separator */}
                 <div className="border-t border-border-default" />
 
-                {/* Features */}
-                <ul className="flex flex-col gap-3">
+                {/* Minimum investment pill */}
+                <div>
+                  <span className="inline-block bg-bg-card text-text-secondary text-sm rounded px-3 py-1.5">
+                    {plan.minInvestment}
+                  </span>
+                </div>
+
+                {/* Feature list */}
+                <ul className="flex flex-col gap-3 flex-1">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <Check className="w-4 h-4 text-accent-gold mt-0.5 flex-shrink-0" />
-                      <span className="text-text-secondary text-sm">{feature}</span>
+                      <span className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full bg-accent-gold/10 flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-accent-gold" strokeWidth={3} />
+                      </span>
+                      <span className="text-text-secondary text-sm leading-relaxed">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
                 {/* CTA */}
-                <Link href={plan.ctaHref} className="block mt-auto">
-                  <Button
-                    variant={plan.ctaVariant}
-                    size="md"
-                    className="w-full justify-center"
-                  >
-                    {plan.cta}
-                  </Button>
+                <Link
+                  href={plan.ctaHref}
+                  className={`
+                    mt-auto block w-full text-center rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-200
+                    ${
+                      plan.featured
+                        ? 'bg-accent-gold text-bg-primary hover:bg-accent-gold-light active:bg-accent-gold-dark'
+                        : 'bg-bg-card text-text-primary border border-border-default hover:border-accent-gold/40 hover:text-accent-gold'
+                    }
+                  `}
+                >
+                  {plan.cta}
                 </Link>
-              </Card>
+              </div>
             </div>
           ))}
         </div>

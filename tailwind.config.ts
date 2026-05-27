@@ -98,6 +98,17 @@ const config: Config = {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        'marquee-left': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'marquee-right': {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        ping: {
+          '75%, 100%': { transform: 'scale(2)', opacity: '0' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.4s ease-out',
@@ -106,6 +117,8 @@ const config: Config = {
         'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
         float: 'float 4s ease-in-out infinite',
         marquee: 'marquee 30s linear infinite',
+        'marquee-left': 'marquee-left 35s linear infinite',
+        'marquee-right': 'marquee-right 35s linear infinite',
       },
       backgroundImage: {
         'gradient-gold': 'linear-gradient(135deg, #C9A85C 0%, #A8833A 100%)',
