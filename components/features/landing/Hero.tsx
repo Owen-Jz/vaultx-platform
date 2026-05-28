@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -75,12 +75,6 @@ function scrambleText(el: HTMLElement, finalText: string, delay = 0): () => void
 }
 
 export default function Hero() {
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
-  }, [])
-
   // ── Existing refs ──────────────────────────────────────────────────────────
   const containerRef = useRef<HTMLElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
@@ -148,29 +142,33 @@ export default function Hero() {
 
   useGSAP(
     () => {
+      // Read once at hook-run time — avoids state-driven re-runs that can
+      // kill in-progress entrance animations on mobile.
+      const isMobile = window.innerWidth < 768
+
       // ── ENTRANCE TIMELINE ─────────────────────────────────────────────────
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out', immediateRender: false } })
 
       // Ambient glow pulses in
-      tl.from(glowRef.current, { opacity: 0, scale: 0.8, duration: 2, ease: 'power2.out' }, 0)
+      tl.from(glowRef.current, { opacity: 0, scale: 0.8, duration: 2, ease: 'power2.out', immediateRender: false }, 0)
 
       // Badge slides up
-      tl.from(badgeRef.current, { y: 20, opacity: 0, duration: 0.7 }, 0.2)
+      tl.from(badgeRef.current, { y: 20, opacity: 0, duration: 0.7, immediateRender: false }, 0.2)
 
       // Headline lines wipe up from clip
       tl.from(
         [line1Ref.current, line2Ref.current, line3Ref.current],
-        { y: '110%', stagger: 0.09, duration: 1.1 },
+        { y: '110%', stagger: 0.09, duration: 1.1, immediateRender: false },
         0.4,
       )
 
       // Subtext + CTAs + trust
-      tl.from(subtextRef.current, { y: 28, opacity: 0, duration: 0.8 }, 0.85)
-      tl.from(ctaRef.current, { y: 28, opacity: 0, duration: 0.8 }, 1.0)
-      tl.from(trustRef.current, { y: 16, opacity: 0, duration: 0.7 }, 1.15)
+      tl.from(subtextRef.current, { y: 28, opacity: 0, duration: 0.8, immediateRender: false }, 0.85)
+      tl.from(ctaRef.current, { y: 28, opacity: 0, duration: 0.8, immediateRender: false }, 1.0)
+      tl.from(trustRef.current, { y: 16, opacity: 0, duration: 0.7, immediateRender: false }, 1.15)
 
       // Portfolio card slides in from right
-      tl.from(cardRef.current, { x: 60, opacity: 0, duration: 1.2, ease: 'power3.out' }, 0.5)
+      tl.from(cardRef.current, { x: 60, opacity: 0, duration: 1.2, ease: 'power3.out', immediateRender: false }, 0.5)
 
       // ── CHART LINE DRAW ───────────────────────────────────────────────────
       const path = chartPathRef.current
@@ -322,7 +320,7 @@ export default function Hero() {
         }
       }
     },
-    { scope: containerRef, dependencies: [isMobile] },
+    { scope: containerRef },
   )
 
   return (
