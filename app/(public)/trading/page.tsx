@@ -192,7 +192,7 @@ export default function TradingPage() {
                 <div className="px-6 pb-7">
                   <Link href="/auth/signup" className="block">
                     <Button
-                      variant={plan.tag ? 'primary' : 'outline'}
+                      variant={plan.tag ? 'primary' : 'secondary'}
                       size="lg"
                       className="w-full"
                     >
@@ -243,7 +243,7 @@ export default function TradingPage() {
                 </Button>
               </Link>
               <Link href="/plans">
-                <Button variant="outline" size="lg">
+                <Button variant="secondary" size="lg">
                   Compare All Plans
                 </Button>
               </Link>
